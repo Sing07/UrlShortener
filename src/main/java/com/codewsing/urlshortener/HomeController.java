@@ -20,8 +20,9 @@ public class HomeController {
 
     @GetMapping("/")
     public String home(Model model) {
-        List<ShortUrl> shortUrls = shortUrlRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt"));
+        List<ShortUrl> shortUrls = shortUrlRepository.findPublicShortUrls();
         model.addAttribute("shortUrls", shortUrls);
+        model.addAttribute("baseUrl", "localhost:8080");
         return "index";
     }
 }
