@@ -1,8 +1,7 @@
-package com.codewsing.urlshortener;
+package com.codewsing.urlshortener.web.controllers;
 
 import com.codewsing.urlshortener.domain.entities.ShortUrl;
-import com.codewsing.urlshortener.domain.repositories.ShortUrlRepository;
-import org.springframework.data.domain.Sort;
+import com.codewsing.urlshortener.domain.services.ShortUrlService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,15 +11,16 @@ import java.util.List;
 @Controller
 public class HomeController {
 
-    private final ShortUrlRepository shortUrlRepository;
 
-    public HomeController(ShortUrlRepository shortUrlRepository) {
-        this.shortUrlRepository = shortUrlRepository;
+    private final ShortUrlService shortUrlService;
+
+    public HomeController(ShortUrlService shortUrlService) {
+        this.shortUrlService = shortUrlService;
     }
 
     @GetMapping("/")
     public String home(Model model) {
-        List<ShortUrl> shortUrls = shortUrlRepository.findPublicShortUrls();
+        List<ShortUrl> shortUrls = shortUrlService.findAllPublicShortUrls();
         model.addAttribute("shortUrls", shortUrls);
         model.addAttribute("baseUrl", "localhost:8080");
         return "index";
