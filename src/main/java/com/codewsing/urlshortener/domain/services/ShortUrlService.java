@@ -6,6 +6,7 @@ import com.codewsing.urlshortener.domain.models.CreateShortUrlCmd;
 import com.codewsing.urlshortener.domain.models.ShortUrlDto;
 import com.codewsing.urlshortener.domain.repositories.ShortUrlRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
 import java.time.Instant;
@@ -13,6 +14,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service
+@Transactional
 public class ShortUrlService {
     private final ShortUrlRepository shortUrlRepository;
     private final EntityMapper entityMapper;
@@ -34,7 +36,7 @@ public class ShortUrlService {
         if(properties.validateOriginalUrl()){
             boolean urlExists = UrlExistenceValidator.isUrlExists(cmd.originalUrl());
             if(!urlExists){
-                throw new IllegalArgumentException("Invalid Url");
+                throw new IllegalArgumentException("Invalid Url" + cmd.originalUrl());
             }
         }
         var shortKey = generateUniqueShortKey();

@@ -53,6 +53,7 @@ public class HomeController {
         try {
             CreateShortUrlCmd cmd = new CreateShortUrlCmd(form.originalUrl());
             var shortUrlDto = shortUrlService.createShortUrl(cmd);
+            // addFlashAttribute deals with the Post/Redirect/Get pattern/problem
             redirectAttributes.addFlashAttribute("successMessage", "Short URL created successfully "+
                     properties.baseUrl()+"/s/"+shortUrlDto.shortKey());
         } catch (Exception e) {
