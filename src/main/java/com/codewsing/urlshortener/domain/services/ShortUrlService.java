@@ -12,9 +12,10 @@ import java.security.SecureRandom;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Optional;
 
 @Service
-@Transactional
+@Transactional(readOnly  = true)
 public class ShortUrlService {
     private final ShortUrlRepository shortUrlRepository;
     private final EntityMapper entityMapper;
@@ -32,6 +33,7 @@ public class ShortUrlService {
                 .stream().map(entityMapper::toShortUrlDto).toList();
     }
 
+    @Transactional
     public ShortUrlDto createShortUrl(CreateShortUrlCmd cmd) {
         if(properties.validateOriginalUrl()){
             boolean urlExists = UrlExistenceValidator.isUrlExists(cmd.originalUrl());
@@ -70,5 +72,19 @@ public class ShortUrlService {
             sb.append(CHARACTERS.charAt(RANDOM.nextInt(CHARACTERS.length())));
         }
         return sb.toString();
+    }
+
+    public Optional<ShortUrlDto> accessShortUrl(String shortKey) {
+        Optional<ShortUrl> shortUrlOptional = shortUrlRepository.findByShortKey(shortKey);
+        if(shortUrlOptional.isEmpty()){
+            return Optional.empty();
+        }
+//        if shortUrlOptional ^ not empty, return shortUrl
+        ShortUrl shortUrl = shortUrlOptional.get();
+//        then check if shortUrl is expired
+        if(shortUrl.getExpiresAt() != null && shortUrl.getExpiresAt().isBefore(Instant.now())){
+            return Optional.empty();
+        }
+        return shortUrlOptional.map(entityMapper::toShortUrlDto);
     }
 }
