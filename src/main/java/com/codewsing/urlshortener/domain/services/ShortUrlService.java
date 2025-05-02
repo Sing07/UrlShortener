@@ -6,6 +6,10 @@ import com.codewsing.urlshortener.domain.models.CreateShortUrlCmd;
 import com.codewsing.urlshortener.domain.models.ShortUrlDto;
 import com.codewsing.urlshortener.domain.repositories.ShortUrlRepository;
 import com.codewsing.urlshortener.domain.repositories.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,9 +36,13 @@ public class ShortUrlService {
         this.userRepository = userRepository;
     }
 
-    public List<ShortUrlDto> findAllPublicShortUrls() {
-        return shortUrlRepository.findPublicShortUrls()
-                .stream().map(entityMapper::toShortUrlDto).toList();
+    public List<ShortUrlDto> findAllPublicShortUrls(int pageNo, int pageSize) {
+        pageNo = pageNo > 1 ? pageNo -1 : 0;
+        Pageable pageable = PageRequest.of(pageNo,pageSize,Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<ShortUrl> shortUrlPage = shortUrlRepository.findAll((org.springframework.data.domain.Pageable) pageable);
+
+        return shortUrlRepository.findPublicShortUrls(pageable)
+                .map(entityMapper::toShortUrlDto).toList();
     }
 
     @Transactional

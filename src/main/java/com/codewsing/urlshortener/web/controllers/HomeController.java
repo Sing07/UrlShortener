@@ -11,10 +11,7 @@ import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
@@ -35,9 +32,11 @@ public class HomeController {
     }
 
     @GetMapping("/")
-    public String home(Model model) {
+    public String home(
+            @RequestParam(defaultValue = "1") Integer page,
+            Model model) {
 //        User currentUser = securityUtils.getCurrentUser();
-        List<ShortUrlDto> shortUrls = shortUrlService.findAllPublicShortUrls();
+        List<ShortUrlDto> shortUrls = shortUrlService.findAllPublicShortUrls(page, properties.pageSize());
         model.addAttribute("shortUrls", shortUrls);
         model.addAttribute("baseUrl", properties.baseUrl());
         model.addAttribute("createShortUrlForm", new CreateShortUrlForm("", false, null));
@@ -50,7 +49,7 @@ public class HomeController {
                           RedirectAttributes redirectAttributes,
                           Model model) {
         if(bindingResult.hasErrors()) {
-            List<ShortUrlDto> shortUrls = shortUrlService.findAllPublicShortUrls();
+            List<ShortUrlDto> shortUrls = shortUrlService.findAllPublicShortUrls(1, properties.pageSize());
             model.addAttribute("shortUrls", shortUrls);
             model.addAttribute("baseUrl", properties.baseUrl());
             return "index";
