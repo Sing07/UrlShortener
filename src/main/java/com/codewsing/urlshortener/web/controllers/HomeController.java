@@ -41,6 +41,7 @@ public class HomeController {
   //      model.addAttribute("shortUrls", shortUrls);
   //      model.addAttribute("baseUrl", properties.baseUrl());
         this.addShortUrlsDataToModel(model, page);
+        model.addAttribute("paginationUrl", "/");
         model.addAttribute("createShortUrlForm", new CreateShortUrlForm("", false, null));
         return "index";
     }
@@ -93,4 +94,20 @@ public class HomeController {
     String loginForm(){
         return "login";
     }
+
+    @GetMapping("/my-urls")
+    public String showUserUrls(
+            @RequestParam(defaultValue = "1") int page,
+            Model model) {
+        var currentUserId = securityUtils.getCurrentUserId();
+        PagedResult<ShortUrlDto> myUrls =
+                shortUrlService.getUserShortUrls(currentUserId, page, properties.pageSize());
+        model.addAttribute("shortUrls", myUrls);
+        model.addAttribute("baseUrl", properties.baseUrl());
+        model.addAttribute("paginationUrl", "/my-urls");
+        return "my-urls";
+    }
+
+
+
 }
