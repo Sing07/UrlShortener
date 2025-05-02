@@ -4,6 +4,7 @@ import com.codewsing.urlshortener.ApplicationProperties;
 import com.codewsing.urlshortener.domain.entities.User;
 import com.codewsing.urlshortener.domain.exceptions.ShortUrlNotFoundException;
 import com.codewsing.urlshortener.domain.models.CreateShortUrlCmd;
+import com.codewsing.urlshortener.domain.models.PagedResult;
 import com.codewsing.urlshortener.domain.models.ShortUrlDto;
 import com.codewsing.urlshortener.domain.services.ShortUrlService;
 import com.codewsing.urlshortener.web.dtos.CreateShortUrlForm;
@@ -36,11 +37,18 @@ public class HomeController {
             @RequestParam(defaultValue = "1") Integer page,
             Model model) {
 //        User currentUser = securityUtils.getCurrentUser();
-        List<ShortUrlDto> shortUrls = shortUrlService.findAllPublicShortUrls(page, properties.pageSize());
-        model.addAttribute("shortUrls", shortUrls);
-        model.addAttribute("baseUrl", properties.baseUrl());
+  //      PagedResult<ShortUrlDto> shortUrls = shortUrlService.findAllPublicShortUrls(page, properties.pageSize());
+  //      model.addAttribute("shortUrls", shortUrls);
+  //      model.addAttribute("baseUrl", properties.baseUrl());
+        this.addShortUrlsDataToModel(model, page);
         model.addAttribute("createShortUrlForm", new CreateShortUrlForm("", false, null));
         return "index";
+    }
+
+    private void addShortUrlsDataToModel(Model model, int pageNo){
+        PagedResult<ShortUrlDto> shortUrls = shortUrlService.findAllPublicShortUrls(pageNo, properties.pageSize());
+        model.addAttribute("shortUrls", shortUrls);
+        model.addAttribute("baseUrl", properties.baseUrl());
     }
 
     @PostMapping("/short-urls")
@@ -49,9 +57,10 @@ public class HomeController {
                           RedirectAttributes redirectAttributes,
                           Model model) {
         if(bindingResult.hasErrors()) {
-            List<ShortUrlDto> shortUrls = shortUrlService.findAllPublicShortUrls(1, properties.pageSize());
-            model.addAttribute("shortUrls", shortUrls);
-            model.addAttribute("baseUrl", properties.baseUrl());
+            this.addShortUrlsDataToModel(model, 1);
+//            PagedResult<ShortUrlDto> shortUrls = shortUrlService.findAllPublicShortUrls(1, properties.pageSize());
+//            model.addAttribute("shortUrls", shortUrls);
+//            model.addAttribute("baseUrl", properties.baseUrl());
             return "index";
         }
 

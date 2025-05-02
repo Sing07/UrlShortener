@@ -3,6 +3,7 @@ package com.codewsing.urlshortener.domain.services;
 import com.codewsing.urlshortener.ApplicationProperties;
 import com.codewsing.urlshortener.domain.entities.ShortUrl;
 import com.codewsing.urlshortener.domain.models.CreateShortUrlCmd;
+import com.codewsing.urlshortener.domain.models.PagedResult;
 import com.codewsing.urlshortener.domain.models.ShortUrlDto;
 import com.codewsing.urlshortener.domain.repositories.ShortUrlRepository;
 import com.codewsing.urlshortener.domain.repositories.UserRepository;
@@ -36,13 +37,14 @@ public class ShortUrlService {
         this.userRepository = userRepository;
     }
 
-    public List<ShortUrlDto> findAllPublicShortUrls(int pageNo, int pageSize) {
+    public PagedResult<ShortUrlDto> findAllPublicShortUrls(int pageNo, int pageSize) {
         pageNo = pageNo > 1 ? pageNo -1 : 0;
         Pageable pageable = PageRequest.of(pageNo,pageSize,Sort.by(Sort.Direction.DESC, "createdAt"));
-        Page<ShortUrl> shortUrlPage = shortUrlRepository.findAll((org.springframework.data.domain.Pageable) pageable);
-
-        return shortUrlRepository.findPublicShortUrls(pageable)
-                .map(entityMapper::toShortUrlDto).toList();
+//        Page<ShortUrl> shortUrlPage = shortUrlRepository.findAll((org.springframework.data.domain.Pageable) pageable);
+ 
+        Page<ShortUrlDto> shortUrlDtoPage = shortUrlRepository.findPublicShortUrls(pageable)
+                .map(entityMapper::toShortUrlDto);
+        return PagedResult.from(shortUrlDtoPage);
     }
 
     @Transactional
