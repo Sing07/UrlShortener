@@ -1,6 +1,7 @@
 package com.codewsing.urlshortener.web.controllers;
 
 import com.codewsing.urlshortener.ApplicationProperties;
+import com.codewsing.urlshortener.domain.entities.User;
 import com.codewsing.urlshortener.domain.exceptions.ShortUrlNotFoundException;
 import com.codewsing.urlshortener.domain.models.CreateShortUrlCmd;
 import com.codewsing.urlshortener.domain.models.ShortUrlDto;
@@ -25,14 +26,17 @@ public class HomeController {
 
     private final ShortUrlService shortUrlService;
     private final ApplicationProperties properties;
+    private final SecurityUtils securityUtils;
 
-    public HomeController(ShortUrlService shortUrlService, ApplicationProperties properties) {
+    public HomeController(ShortUrlService shortUrlService, ApplicationProperties properties, SecurityUtils securityUtils) {
         this.shortUrlService = shortUrlService;
         this.properties = properties;
+        this.securityUtils = securityUtils;
     }
 
     @GetMapping("/")
     public String home(Model model) {
+        User currentUser = securityUtils.getCurrentUser();
         List<ShortUrlDto> shortUrls = shortUrlService.findAllPublicShortUrls();
         model.addAttribute("shortUrls", shortUrls);
         model.addAttribute("baseUrl", properties.baseUrl());
