@@ -35,6 +35,6 @@ VALUES ('rs1Aed', 'https://www.youtube.com/', 1, TIMESTAMP '2024-07-15', NULL, F
 
        ('tt5y6r', 'https://github.com/naptha/tesseract.js', 1,
         TIMESTAMP '2024-08-14', NULL, FALSE, 0),
-       ('fgghty', 'https://github.com/Sing07''', 1,
+       ('fgghty', 'https://github.com/Sing07', 1,
         TIMESTAMP '2024-08-15', NULL, FALSE, 0)
 ;
